@@ -7,8 +7,9 @@ import os
 import message_filters
 import rospy
 from sensor_msgs.msg import Image
-
-
+import numpy as np
+import jsk_recognition_utils
+import cv2
 class TestDataSave(ConnectionBasedTransport):
 
     def __init__(self):
@@ -19,25 +20,45 @@ class TestDataSave(ConnectionBasedTransport):
         while os.path.exists(os.path.join(self.save_path,str(self.dir_num))):
             self.dir_num += 1
         
-        
-    def subscribe(self):
-        self.sub_img = message_filters.Subscriber('~input', Image)
-        self.sub_label = message_filters.Subscriber('~input/label', Image)
-        queue_size = rospy.get_param('~queue_size', 100)
-        if rospy.get_param('~approximate_sync', False):
+        self.sub_img = message_filters.Subscriber('raw_image/output', Image)
+        self.sub_label = message_filters.Subscriber('label_image/output', Image)
+        print "1"
+        queue_size = rospy.get_param('~queue_size', 1000)
+        if rospy.get_param('~approximate_sync', True):
             sync = message_filters.ApproximateTimeSynchronizer(
                 [self.sub_img, self.sub_label], queue_size=queue_size,
                 slop=0.1)
         else:
             sync = message_filters.TimeSynchronizer(
                 [self.sub_img, self.sub_label], queue_size=queue_size)
+        print "2"
+        sync.registerCallback(self._save)
+
+
+
+    '''
+    def subscribe(self):
+        #self.sub_img = message_filters.Subscriber('~input', Image)
+        #self.sub_label = message_filters.Subscriber('~input/label', Image)
+        self.sub_img = message_filters.Subscriber('raw_image/output', Image)
+        self.sub_label = message_filters.Subscriber('label_image/output', Image)
+        print "1"
+        queue_size = rospy.get_param('~queue_size', 1000)
+        if rospy.get_param('~approximate_sync', True):
+            sync = message_filters.ApproximateTimeSynchronizer(
+                [self.sub_img, self.sub_label], queue_size=queue_size,
+                slop=0.1)
+        else:
+            sync = message_filters.TimeSynchronizer(
+                [self.sub_img, self.sub_label], queue_size=queue_size)
+        print "2"
         sync.registerCallback(self._save)
 
 
     def unsubscribe(self):
         self.sub_img.sub.unregister()
         self.sub_label.sub.unregister()
-
+    '''
 
     def _save(self, img_msg, label_msg):
 
@@ -52,7 +73,7 @@ class TestDataSave(ConnectionBasedTransport):
 
         # convert image                                                                                    
         bridge = cv_bridge.CvBridge()
-        input_image = bridge.imgmsg_to_cv2(img_msg, 'rgb8')
+        input_image = bridge.imgmsg_to_cv2(img_msg, 'bgr8')
         input_label = bridge.imgmsg_to_cv2(label_msg)
 
         # regional image
@@ -67,9 +88,9 @@ class TestDataSave(ConnectionBasedTransport):
 
         # save image
         cv2.imwrite(os.path.join(save_path,'total/')+'input.jpg',input_image)
-        cv2.imwrite(os.path.join(save_path,'total/')+'label.jpg',input_label)
+        cv2.imwrite(os.path.join(save_path,'total/')+'label.jpg',input_label*255)
         i = 0
-        for region in region_images :
+        for region in region_imgs :
             cv2.imwrite(os.path.join(save_path,'region/')+'{0}.jpg'.format(str(i)),region)
             i += 1
 
