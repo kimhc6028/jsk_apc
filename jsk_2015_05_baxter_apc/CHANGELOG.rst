@@ -2,6 +2,16 @@
 Changelog for package jsk_2015_05_baxter_apc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2016-03-08)
+------------------
+* fix gmail for iory and wkentaro
+* Contributors: Kei Okada
+
+0.2.1 (2016-03-08)
+------------------
+* fix maintainer/author in package.xml
+* Contributors: Kei Okada
+
 0.2.0 (2016-03-08)
 ------------------
 * Update APC 2015 for Advanced Robtoics Paper

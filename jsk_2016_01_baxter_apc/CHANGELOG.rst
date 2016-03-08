@@ -2,6 +2,14 @@
 Changelog for package jsk_2016_01_baxter_apc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2016-03-08)
+------------------
+
+0.2.1 (2016-03-08)
+------------------
+* fix maintainer/author in package.xml
+* Contributors: Kei Okada
+
 0.2.0 (2016-03-08)
 ------------------
 * Try APC2016 with program for APC2015
